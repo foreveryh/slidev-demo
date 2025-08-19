@@ -1,54 +1,100 @@
 # Welcome to [Slidev](https://github.com/slidevjs/slidev)!
 
-To start the slide show:
+A presentation slides project configured for Vercel deployment without PDF export functionality.
 
-- `pnpm install`
-- `pnpm dev`
-- visit <http://localhost:3030>
+## Quick Start
 
-Edit the [slides.md](./slides.md) to see the changes.
+```bash
+pnpm install
+pnpm dev
+```
 
-Learn more about Slidev at the [documentation](https://sli.dev/).
+Visit <http://localhost:3030> to see your slides.
 
-## Deployment
+## Vercel Deployment Configuration
 
-### First-time Deployment
+This project is specifically configured to work on Vercel without requiring Playwright (which has resource limitations on Vercel).
 
-⚠️ **Important Notes for First Deployment:**
+### Key Configuration Changes
 
-- **Web-only Deployment**: This deployment is configured for web presentation only (no PDF export functionality)
-- **Chunk Size Warning**: You may see warnings about large chunks (>2000 kB). This is normal for Slidev and can be ignored for now.
-- **Build Optimization**: The project includes Vite configuration to optimize chunk sizes and build performance
+#### 1. **Package.json Scripts**
+```json
+{
+  "scripts": {
+    "build": "slidev build",        // Only build, no export
+    "dev": "slidev --open"
+  }
+}
+```
+- ❌ **Removed**: `export` and `start` scripts that would trigger Playwright
+- ✅ **Kept**: Only `build` script for SPA generation
 
-### Deploy to Vercel
+#### 2. **Slidev Configuration (slidev.config.ts)**
+```typescript
+export default defineConfig({
+  export: false,                    // Disable export functionality
+  build: {
+    export: false,                  // Disable PDF export in build
+    out: 'dist'                     // Output directory
+  }
+})
+```
 
-This project is configured for easy deployment to Vercel. Follow these steps:
+#### 3. **Frontmatter Settings (slides.md)**
+```yaml
+---
+export: false                       // Disable export in slides
+download: false                     // Hide download buttons
+---
+```
 
-1. **Install dependencies (including Playwright):**
-   ```bash
-   pnpm install
-   ```
+#### 4. **Vercel Configuration (vercel.json)**
+```json
+{
+  "buildCommand": "pnpm install && pnpm build",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install"
+}
+```
 
-2. **Build the project locally first:**
-   ```bash
-   pnpm build
-   ```
+### Why These Changes?
 
-3. **Deploy to Vercel:**
-   - Install Vercel CLI: `npm i -g vercel`
-   - Run: `vercel`
-   - Follow the prompts to connect your GitHub repository
-   - Vercel will automatically detect the build settings
+- **Playwright Dependency**: Slidev's export feature requires Playwright for PDF generation
+- **Vercel Limitations**: Vercel has resource constraints that prevent Playwright installation
+- **Solution**: Configure for web-only deployment (SPA) without export capabilities
 
-4. **Automatic deployments:**
-   - Push to your main branch to trigger automatic deployments
-   - Vercel will build and deploy your slides automatically
+### Deployment Steps
 
-5. **Custom domain:**
-   - Add your custom domain in the Vercel dashboard
-   - Configure DNS settings as instructed
+1. **Push your code** to GitHub
+2. **Connect to Vercel** and import your repository
+3. **Build settings** will be automatically detected:
+   - Build Command: `pnpm install && pnpm build`
+   - Output Directory: `dist`
+4. **Deploy** - Vercel will build your slides as a static SPA
 
-The project includes:
-- `vercel.json` configuration for optimal deployment settings
-- `slidev.config.ts` for Slidev-specific configuration and build optimization
-- Web-only deployment configuration (export functionality disabled)
+### What You Get
+
+✅ **Working**: 
+- Web presentation slides
+- Interactive components
+- Responsive design
+- Fast loading
+
+❌ **Not Available**:
+- PDF export
+- Download functionality
+- Offline presentation files
+
+### Local Development
+
+```bash
+pnpm install          # Install dependencies
+pnpm dev             # Start development server
+pnpm build           # Build for production (local testing)
+```
+
+### Learn More
+
+- [Slidev Documentation](https://sli.dev/)
+- [Vercel Deployment Guide](https://vercel.com/docs)
+- [Slidev Themes](https://sli.dev/themes/gallery)
