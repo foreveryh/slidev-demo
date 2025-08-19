@@ -29,13 +29,21 @@ This project is specifically configured to work on Vercel without requiring Play
 - ❌ **Removed**: `export` and `start` scripts that would trigger Playwright
 - ✅ **Kept**: Only `build` script for SPA generation
 
-#### 2. **Slidev Configuration (slidev.config.ts)**
+#### 2. **Vite Configuration (slidev.config.ts)**
 ```typescript
+import { defineConfig } from 'vite'
+
 export default defineConfig({
-  export: false,                    // Disable export functionality
   build: {
-    export: false,                  // Disable PDF export in build
-    out: 'dist'                     // Output directory
+    chunkSizeWarningLimit: 3000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'slidev-theme': ['@slidev/theme-default', '@slidev/theme-seriph'],
+          'vue-vendor': ['vue']
+        }
+      }
+    }
   }
 })
 ```
@@ -51,9 +59,9 @@ download: false                     // Hide download buttons
 #### 4. **Vercel Configuration (vercel.json)**
 ```json
 {
-  "buildCommand": "pnpm install && pnpm build",
-  "outputDirectory": "dist",
-  "installCommand": "pnpm install"
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
 }
 ```
 
@@ -68,8 +76,8 @@ download: false                     // Hide download buttons
 1. **Push your code** to GitHub
 2. **Connect to Vercel** and import your repository
 3. **Build settings** will be automatically detected:
-   - Build Command: `pnpm install && pnpm build`
-   - Output Directory: `dist`
+   - Build Command: `pnpm build` (default)
+   - Output Directory: `dist` (default)
 4. **Deploy** - Vercel will build your slides as a static SPA
 
 ### What You Get
@@ -96,5 +104,6 @@ pnpm build           # Build for production (local testing)
 ### Learn More
 
 - [Slidev Documentation](https://sli.dev/)
+- [Slidev Hosting Guide](https://sli.dev/guide/hosting)
 - [Vercel Deployment Guide](https://vercel.com/docs)
 - [Slidev Themes](https://sli.dev/themes/gallery)
