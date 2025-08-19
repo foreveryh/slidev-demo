@@ -26,6 +26,8 @@ seoMeta:
   # or generate one from the first slide if not found.
   ogImage: auto
   # ogImage: https://cover.sli.dev
+export: false
+download: false
 ---
 
 # Welcome to Slidev
